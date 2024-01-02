@@ -1,0 +1,22 @@
+---
+name: CI
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-glaber:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/bakaut/builder/builder:glaber-debian-bullseye-0.0.1-23
+    steps:
+      - name: Build glaber
+        run: |
+          export GLABER_VERSION=$(cat include/version.h | grep GLABER_VERSION | tr -dc 0-9.)
+          ./bootstrap.sh
+          ./configure
+          make dbschema gettext
+          autoreconf -fvi
+          cp -r build/${OS}/${OS_VER}/ debian
+          sed -i "1 s/(.*+/(1:$GLABER_VERSION-${CI_COMMIT_SHORT_SHA}+/g" debian/changelog
+          head -n 5 debian/changelog
+          dpkg-buildpackage -b --no-sign
