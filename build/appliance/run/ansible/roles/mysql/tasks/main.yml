@@ -1,0 +1,67 @@
+---
+- name: Install prerequisites
+  block:
+  - name: Install base apt
+    apt:
+      name:
+        - gnupg2
+        - debconf-utils
+        - python3-mysqldb
+      state: present
+      update_cache: yes
+
+  - name: Install Percona release package
+    apt:
+      deb: https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+
+- name: Check if mysql server is running
+  mysql_query:
+    login_host: localhost
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    query: select 1
+  register: mysql_status
+  ignore_errors: yes
+
+- name: Install Percona mysql
+  block:
+  - name: Set up Percona
+    command: "percona-release setup {{ percona_release }}"
+
+  - name: Pre-configure Percona packages
+    debconf:
+      name: percona-server-server
+      question: "{{ item.question }}"
+      vtype: "password"
+      value: "{{ item.value }}"
+    loop:
+      - { question: "percona-server-server/root-pass", value: "{{ mysql_root_password }}" ,vtype: password }
+      - { question: "percona-server-server/re-root-pass", value: "{{ mysql_root_password }}" ,vtype: password}
+      - { question: "percona-server-server/default-auth-override", value: "Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" ,vtype: select} 
+    no_log: true
+
+  - name: Install Percona Server and Toolkit
+    apt:
+      name:
+        - "percona-server-server={{ mysql_version }}"
+        - "percona-server-client={{ mysql_version }}"
+        - "percona-server-common={{ mysql_version }}"
+        - percona-toolkit
+      state: present
+
+  - name: Reset all debconf settings
+    command: echo PURGE | debconf-communicate
+  when: "mysql_status.failed == true"
+
+- name: Copy Mysql server config
+  copy:
+    src: etc/mysql/conf.d/
+    dest: /etc/mysql/conf.d/
+    mode: preserve
+
+- name: Copy Mysql server innodb config
+  template:
+    src: etc/mysql/conf.d/innodb.cnf.j2
+    dest: /etc/mysql/conf.d/innodb.cnf
+    mode: preserve
+  notify: Restart mysql server

@@ -1,0 +1,135 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - wget
+      - software-properties-common
+      - nmap
+      - gnupg2
+      - openssl
+      - ca-certificates
+      - locales
+      - lsb-release
+      - apt-transport-https
+    state: present
+
+- name: Add glaber and nginx GPG keys
+  apt_key: 
+    url: "https://glaber.io/{{ glaber_repo }}/key/repo.gpg"
+    state: present
+
+- name: Import Nginx signing key
+  block:
+  - name: Download Nginx signing key
+    get_url:
+      url: https://nginx.org/keys/nginx_signing.key
+      dest: /tmp/nginx_signing.key
+      mode: '0644'
+  - name: Convert Nginx signing key to binary type
+    shell: |
+      gpg --dearmor < /tmp/nginx_signing.key > /usr/share/keyrings/nginx-archive-keyring.gpg
+    args:
+      creates: /usr/share/keyrings/nginx-archive-keyring.gpg
+  - name: Remove the downloaded key file
+    file:
+      path: /tmp/nginx_signing.key
+      state: absent
+
+- name: Add glaber and nginx repositories
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  loop:
+   - "{{ apt_glaber_repo }}"
+   - "{{ apt_nginx_repo }}"
+
+# Workaround if php version >7 <8
+- name: Install php{{ default_php_version }}-json extensions
+  apt:
+    name: "php{{ default_php_version }}-json"
+    state: present
+  ignore_errors: yes
+
+- name: Install php and php extensions
+  apt:
+    name:
+      - "php{{ default_php_version }}-common" 
+      - "php{{ default_php_version }}"
+      - "php{{ default_php_version }}-gd"
+      - "php{{ default_php_version }}-bcmath"
+      - "php{{ default_php_version }}-ctype"
+      - "php{{ default_php_version }}-xml"
+      - "php{{ default_php_version }}-xmlreader"
+      - "php{{ default_php_version }}-xmlwriter"
+      # - "php{{ default_php_version }}-session"
+      - "php{{ default_php_version }}-sockets"
+      - "php{{ default_php_version }}-mbstring"
+      - "php{{ default_php_version }}-gettext"
+      - "php{{ default_php_version }}-ldap"
+      # - "php{{ default_php_version }}-openssl"  # Optional, for SAML
+      - "php{{ default_php_version }}-cli"
+      - "php{{ default_php_version }}-opcache"
+      - "{{ db_php_lib }}"
+    state: present
+
+- name: Install nginx and php-fpm
+  apt:
+    name:
+      - "nginx={{ nginx_version }}" 
+      - "php{{ default_php_version }}-fpm"
+    state: present
+    update_cache: yes
+
+- name: Install glaber-web packages
+  apt:
+    name:
+      - "glaber-nginx-conf={{ glaber_nginx_version }}"
+    state: present
+
+- name: Stop apache2 server
+  systemd:
+    name: apache2
+    state: stopped
+  ignore_errors: yes
+
+- name: Create directories and set permissions
+  file:
+    path: "/run/php"
+    state: directory
+    owner: "www-data"
+    group: "www-data"
+
+- name: Create nginx sites directori
+  file:
+    path: "/etc/nginx/sites-enabled"
+    state: directory
+    owner: "root"
+    group: "root"
+
+- name: Create directories and set permissions
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: preserve
+  loop:
+    - src: etc/nginx/nginx.conf.j2
+      dest: /etc/nginx/nginx.conf
+      owner: root
+      group: root
+    - src: etc/nginx/sites-enabled/zabbix.conf.j2
+      dest: /etc/nginx/sites-enabled/zabbix.conf
+      owner: root
+      group: root
+    - src: etc/php/fpm/conf.d/99-zabbix.ini.j2
+      dest: /etc/php/{{ default_php_version }}/fpm/conf.d/99-zabbix.ini
+      owner: root
+      group: root
+    - src: etc/zabbix/web/zabbix.conf.php.j2
+      dest: /etc/zabbix/web/zabbix.conf.php
+      owner: www-data
+      group: www-data
+  notify:
+    - Restart nginx
+    - Restart php-fpm

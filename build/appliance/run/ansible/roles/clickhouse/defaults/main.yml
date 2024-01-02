@@ -1,0 +1,4 @@
+---
+clickhouse_version: "21.3*"
+# https://clickhouse.com/docs/en/install#setup-the-debian-repository
+clickhouse_pgp_key: "8919F6BD2B48D754"

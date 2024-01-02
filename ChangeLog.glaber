@@ -1,0 +1,640 @@
+2023-12-21 ver 3.3.74 3.3.75 (master, release)
+    - fix: improper value type messages for unsupported item types, clickhouse db credentials removed from log output
+2023-12-08 ver 3.3.71 3.3.72 3.3.73 (master, release)
+    - fix: Allow {#DISCOVERY_MACROS} in item prototype keys (not only in params)
+2023-12-08 ver 3.3.70 (master, release)
+    - feat: run any scripts (not only js ones) in script items https://docs.glaber.io/ru/features/polling/scripts/
+2023-12-08 ver 3.3.69 (master, release)
+    - fix: js fixed to allow messaging and notification to work
+2023-12-07 ver 3.3.68 (master, release)
+    - feat: internal process monitoring
+    - fix: problems on importing hosts and templates
+2023-12-06 ver 3.3.67 (master)
+    - fix: xml constants to import/export objects with deprecated snmp trap items
+2023-12-01 ver 3.3.66 (master)
+    - fix: change function calculation
+2023-11-30 ver 3.3.65 (master)
+    - fix: local redirect preprocessing fixed
+    - feat: local redirect regexp preprocessing implemented
+2023-11-26 ver 3.3.64 (master)
+    - fix: notify async pollers on macro change to update item's configurations
+2023-11-26 ver 3.3.62 3.3.63 (master)
+    - feat: allow users with read-only prermissions to view configuration data in read-only mode
+2023-11-23 ver 3.3.61 (master)
+    - fix: multiple history clickhouse backend not working
+2023-11-15 ver 3.3.58 3.3.59 3.3.60 (master)
+    - fix: possible segv in poller_snmp_worker on timeout event
+    - fix: fix timeout on large number of oids in walk or discovery items
+    - fix: long oids or many oids not correctly polled in discovery items, some format fixes
+2023-11-14 ver 3.3.57(master)
+    - fix memory overrun on glb_snmp_worker on late data arrival
+2023-11-10 ver 3.3.56(master)
+    - clean: glaber modules dismissed
+2023-11-10 ver 3.3.55(master)
+    - fix: snmp discovery worker not polling more then one oid
+    - fix: cannot add / edit json preproc discovery lld item
+2023-11-08 ver 3.3.54(master)
+    - fix: ITEM.VALUEn support for string items
+2023-11-08 ver 3.3.53(master)
+    - added extra debug logging on macro calc for problem names
+2023-11-04 ver 3.3.52(master)
+    - fix timer trigger calculations to prevent excessive error log traces
+2023-11-01 ver 3.3.51(master)
+    - fix: function calc log trace for unsupported items
+    - fix: hist syncer excessive CPU usage
+2023-11-01 ver 3.3.48 3.3.49 3.3.50 (master)
+    - fix: ITEM.VALUEn macro isn't working 
+    - fix: nodata calculation
+    - fix: trigger locking preventing to manually close nodata problems
+2023-10-29 ver 3.3.47 (master)
+    - fix: possible segv on execute_now for items absent in the config cache
+2023-10-29 ver 3.3.45 3.3.46 (master)
+    - fix: value cache might miss even if data present
+2023-10-29 ver 3.3.44 (master)
+    - fix: history syncer memory leak
+2023-10-24 ver  3.3.42 3.3.43 (master)
+    - feat: host state debugg
+    - fix: interface states passed from proxy
+    - fix: config nabigation restored for hosts
+2023-10-23 ver  3.3.41 (master)
+    - fix: lld prototypes navigation
+2023-10-22 ver  3.3.40 (master)
+    - fix: customised graph params not working
+2023-10-20 ver  3.3.39 (master)
+    - fix: proxy memory leak 
+2023-10-20 ver  3.3.38 (master)
+    - fix: removed excessive logging
+2023-10-20 ver  3.3.37 (master)
+    - fix: incoming log processing via trapper/proxy/agent
+2023-10-18 ver  3.3.36 (master)
+    - fix: trigger calculation for unsupported values
+2023-10-18 ver  3.3.35 (master)
+    - fix: proper snmp queues assignement
+    - fix: minor UI fixes
+2023-10-18 ver  3.3.34 (master)
+    - fix: discovery items not opening
+2023-10-18 ver  3.3.33 (master)
+    - feat: walk[ support in async snmp worker poller
+2023-12-07 ver  3.3.32 (master)
+    - fix: metric IPC refactored to avoid memory leaking
+2023-12-07 ver  3.3.31 (master)
+    - fix: set trigger state whatever the set flags to update trigger error
+2023-12-07 ver  3.3.30 (master)
+    - fix: debug causing plaintext widget inperable
+2023-10-07 ver  3.3.29 (master)
+    - feat: added operational state for discovery items in the item edit panel
+    - feat: snmp v3 async polling not requiring net-snmp
+    - fix: minor UI fixes
+2023-10-07 ver  3.3.28 (master)
+    - fix: pollers stuck in IPC slots waiting when using huge (>1000) number of pollers
+2023-09-26 ver  3.3.27 (master)
+    - fix: LastData fail on non numeric history values
+2023-09-26 ver  3.3.26 (master)
+    - feat: improved queue overview and detail panles, changed in state/throttling to correctly account polling slowdowns 
+2023-09-22 ver  3.3.25 (master)
+    - fix: only certain item types can maange interface state
+2023-09-22 ver  3.3.22 - 3.3.24 (master)
+    - removed deadlock possibility in dbconfig.c
+2023-09-21 ver  3.3.14 - 3.3.21 (master)
+    - fix: fixes in classic poller queues to work correctly with interfaces
+2023-09-21 ver  3.3.12 3.3.13 (master)
+    - fix: interface throttling for classical pollers
+2023-09-18 ver 3.3.11 (master)
+    - fix: double metrics, intrface throttling in classical pollers
+2023-09-18 ver 3.3.11 (master)
+    - fix: logging of iface change in classic poller
+2023-09-18 ver 3.3.7-10 (master)
+    - fixes: host state calculation, added sync pollers stat to rtc
+2023-09-13 ver 3.3.6 (master)
+    - fix: added files cleanup in centos8 build
+    - fix: worker restart and run control stability
+2023-09-13 ver 3.3.5 (master)
+    - fix: named host interfaces display in host list, fixed show http interface on agent activity
+    - fix: correct items accounting in statistics for proxy item count
+2023-09-11 ver 3.3.3 3.3.4 (master)
+    - fix: host avialbility state added to glb_state, implemented proxy->server avail state sending
+    - fix: setting error on proxy error items
+2023-09-09 ver 3.3.2 (master)
+    - fix: new metrics might be polled before proprocessing config is loaded to preprocessing_worker
+    - fix: SEGV on host change either in proxy and server
+    - fix: LLD items are not passed from proxy to sever
+    - fix: calculated items not processed for proxy hosts
+2023-09-06 ver 3.3.0 3.3.1 (master)
+    - feat: interfaces are moved to the state, got rid of the availability manager
+    - fix: proxy interface status accept and apply on the server
+    - feat: support of 'named' interfaces that fcommit or interface-less protocols
+2023-08-30 ver 3.2.35 3.2.26 (master)
+    - perf: removed SQL query in expressions.c causing DB performance issues, lastlogsize returned and placed into state
+2023-08-25 ver 3.2.34 (master, release)
+    - fix bug in type coversion leading to misinterpreting proxy data
+2023-08-25 ver 3.2.33 (master, release)
+    - fix: unable to load data from proxy, tempate import problem
+2023-08-10 ver 3.2.32 (master, release)
+   - feature: availability report switched to dynamic table, added some extra info
+2023-08-10 ver 3.2.31 (master, release)
+   - fix: crash on inventory sync 
+2023-08-10 ver 3.2.29, 3.2.30 (master, release)
+   -  fix: lld worker crash on large LLD requests (containing a row > 2048 bytes), thks to https://t.me/danlun14 and https://t.me/AlexeyAksenoff
+2023-08-10 ver 3.2.28 (master, release)
+   - fix: GlbPinger is disabled by default
+2023-08-08 ver 3.2.27 (master, release)
+    - fix: removed glbmap setcap command to prevent deb pckts complain about missing binary
+2023-08-04 ver 3.2.26 (master, release)
+    - fix: removed glbmap setcap command to prevent deb pckts complain about missing binary
+2023-08-04 ver 3.2.25 (master, release)
+    - fix: wrong update message on update dashboard
+2023-08-04 ver 3.2.24 (master, release)
+    - fix: wrong trend avg calculation
+2023-08-02 ver 3.2.23 (master, release)
+    - fix: bug in functions calculation leading to consider normal items as unsupported
+2023-08-02 ver 3.2.22 (master)
+    - removed lld logging
+2023-07-31 ver 3.2.19, 3.2.20, 3.2.21 (master)
+    - added some debug logging in lld worker
+2023-07-31 ver 3.2.18 (master)
+    - workers are moved to a seaparate project (and installation files), https://gitlab.com/glaber/workers
+    - triggers description len field enlarged to 2048 thks to https://t.me/AlexeyAksenoff patch
+2023-07-24 ver 3.2.17 (master, release)
+    -3.2 release
+2023-07-24 ver 3.2.16 (master only)
+    -feat: add priorities to IPC to avoid preprocessor stucking on high load
+    -fix: async items notification
+    -fix: support of uppercase extensions for uploaded import files
+2023-07-21 ver 3.2.13, 3.2.14 3.2.15 (master only)
+    -fix: redirect preprocessing steps logic to avoid situation when redirected item continued to be processed after redirected
+    -fix: periodical ipc flushing to prevent metrics stuck on slow ingest rates
+    -fix: glb_server too long buffering fix
+2023-07-20 ver 3.2.11, 3.2.12 (master only)
+    -fix: ipc memory issue might be causing segv, ipc queue menagment to reduce shared mem usage
+    -fix: restored functionality of the original graphs view
+2023-07-17 ver 3.2.9, 3.2.10 (master only)
+    -fix: incorrect dbupgrade code leading not creating glaber dependancy table
+2023-07-15 ver 3.2.8 (master only)
+    -fix: segv on incorrect interval on server items
+2023-07-14 ver 3.2.7 (master only)
+    -fix: lld data not put to value cache, latest data view fixes
+2023-07-12 ver 3.2.6 (master only)
+    -fix: segv on non-intrerval delays, absence of delay macro translation
+2023-07-12 ver 3.2.5 (master only)
+    -fixed typo in api_jsonrpc leading api to be unfunctionable
+2023-07-12 ver 3.2.4 (master only)
+    - fixed latest data content reloading
+2023-07-11 ver 3.2.3 (master only)
+    -upgraded to Zabbix 6.4.4 sources, fixed second-level menu fail
+    -fixed rows selection in datatables
+2023-07-10 ver 3.2.2 (master only)
+    -fix: removed excessive logging in preproc ipc
+2023-07-10 ver 3.2.1 (master only)
+    -fix: latest data fixed so that filters works now, latest data moved from modules to and replaced internal latest data
+    -a few UI improvements (link to item from history)
+2023-07-07 ver 3.2.0
+    -feat: migrated to 6.4.2 sources, refactored preprocessing
+    -fix: proxy build errors
+    -fix: go mod - updated dependency list to up-to date version
+2023-06-27 ver 3.1.8
+    -fix: extra logging removed, css styles fixed for overrun menus
+2023-06-23 ver 3.1.7
+    -fix: segv on failed preprocessing steps
+ver 3.1.6
+    -fix: setting of state of supported items fixed
+ver 3.1.5
+    -fix: agent result double preproc fixed
+ver 3.1.3
+    -fix: float number rounding to int in preprocessing fixed
+ver 3.1.2
+    -fix: metrics IPC fixes to improove speed, fix in preprocessing to avoid preprocessor stuck when preproc queue is empty, internal monitoring of the dbsync
+ver 3.1.1
+    -fix: counter types for ipc options to not overflow on high queue size numbers
+ver 3.1.0
+    -feat: intoroducing glb_preproc_worker, glb_ipc for metrics exchange, got rid of preproc manager, history cache, 
+    proxy config fetch improved, new preprocessing steps added
+ver 3.0.74
+    - fix: disable attempts to request trends for non-numeric types
+ver 3.0.73
+    - added extra clickhouse logging for item debugging
+ver 3.0.72
+    - feature: additional history interface item debug logging is added
+ver 3.0.70
+    - fixed glb_hist_victoria : interval miscalculation where producing too much data
+ver 3.0.69
+    - cache fetching allowing fetch of data event if head is out of cache bounds
+ver 3.0.68
+    - fix: history_worker fixed to produce proper keys in json, victoria worker fixed to work in jsonl format
+ver 3.0.67
+    - feat: monospace font for item keys and more icons for latest data
+ver 3.0.66
+    - fixed problem preventing proxy to start in absence of glbmap even if old pingers where enabled
+ver 3.0.65
+    - fix in tsbuff to prevent retrieving wrong metrics on emptied buffer 
+ver 3.0.64
+    - fixed datatables warning message on empty tables
+ver 3.0.63
+    - fix in tsbuff to prevent retrieving wrong metrics on emptied buffer 
+ver 3.0.62
+    - artwork (icons) reverted to Glaber
+ver 3.0.61
+    - added astra/orel build rules
+    - fixed sorting in datatables for date column if Russian localization is used, added valuecache cleanup in housekeeper
+ver 3.0.60
+    - fix: timestamp  loss for dispatched items
+ver 3.0.59
+    - reverted jquery update 
+ver 3.0.58
+    - fix updated datatables and jquery libs to fix cve security issues
+ver 3.0.57
+ver 3.0.56
+    - fix: trigger state error on attempt to sort by the trigger state
+ver 3.0.54
+    - built update
+ver 3.0.53
+    - fixed dependency API warn message
+ver 3.0.52
+    - fixed support of 'Zabbix' object in javascript
+ver 3.0.50
+    - added time attribute to parse from server data
+ver 3.0.49
+    - added feature to consider unresolvable icmp items as unaccessible to not break triggering, added timestamp parsing for glb_server
+ver 3.0.48
+    - removed outdated navigation panel, fixed problem panel navigation
+ver 3.0.47
+    - minor version change to force proper rebuild
+ver 3.0.46
+    - dependency updates, version update
+ver 3.0.45
+    - fix Sqlite3 build issues
+ver 3.0.44
+    - implemented parallel Glaber tables updating procedures, added automatic hosts dependency table creation
+ver 3.0.43
+    - removed go workers from rpms of server
+ver 3.0.42
+    - returned support of user auth by 'user'
+ver 3.0.41
+    - fix: delay for workers is used as a timeout fixed
+ver 3.0.40
+    - fix: extra debugging in the web panel, error on steps duplication
+ver 3.0.39
+    - fix: trigger cache value update logic, file dumps fixes
+ver 3.0.38
+    - feat: added LLD filtering logging, returned host expire notification to UI
+ver 3.0.37
+    - fix: fixed hanging on absent dump directory, removed compact table display on latest data to be able to search and view pagination
+ver 3.0.36
+    - fix: fixed sorting in the dynamic tables in latest data
+ver 3.0.35
+    - fix: proper datatable sizing, map reloading with selected element
+ver 3.0.34
+    - fix: proxy async pollers init possibly causing crash
+ver 3.0.33
+    - fix: proxy failing on setting default ICMP method
+ver 3.0.32
+    - fix: glbmap included to proxy package
+ver 3.0.31
+    - fix: upgrade proxy init order leading crash on boot and improper glb_preprocessor init leading to preprocessing fail on start
+ver 3.0.30
+    - fix: upgrade from previously enabled timescale DB goes wrong if timescale extension is missing
+ver 3.0.29
+    - fix: hostnav failing on host discovery field
+ver 3.0.28
+    - fix: trends non numeric data save problem on host clone
+ver 3.0.27
+    - fix: removed requirement for edit permission to view host navigation panel
+ver 3.0.26
+    - fix: latest data link in host nav
+ver 3.0.25
+    - fix: graph display on some users not working
+ver 3.0.24
+    - fix: host clone and full clone not working
+ver 3.0.23
+    - fix: set default glaber-specific processes number to one 
+ver 3.0.22
+    - feat: added host navigation to problems, host edit, several other panels
+ver 3.0.21
+    - fix: wrong ip address is set for http simple checks
+ver 3.0.20
+    - fix: interface update not seen by async pollers
+ver 3.0.19
+    - feat: added dashboard quick navigation buttons
+ver 3.0.18
+    - fix: search link doesn't reset latest data remembered filters, fix: default interface selection for items having no interface
+ver 3.0.17
+    - new latest data view, fix workers, fix agent tcp pollers
+ver 3.0.16
+    - fix segv on history sync on setting log severity
+ver 3.0.15
+    - fix periodical segv on history syncer 
+ver 3.0.14
+    - added logging to config sync 
+ver 3.0.13
+    - fixed history menu popup for latest data
+ver 3.0.12
+    - fixed favicon
+ver 3.0.11
+    - fix: agent wasn't starting 
+ver 3.0.10
+    - fix aggregate responses for non numeric types are blocked in history module, latest view module updated
+ver 3.0.9
+    - fix bug on detecting proper number of pingers if using fping
+ver 3.0.8
+    - fix removing of redundant problems is implemented
+ver 3.0.7
+    - fix "unknown request method error on host duplication", maximum interval skip time is set to 30 seconds
+ver 3.0.6
+    - fixed CI/CD build to build older ubuntu versions and astra linux deb files
+ver 3.0.5
+    - refactored trigger expression code to avoid puzzling flags, fixed trigger status return (error field is always returned, even if empty), fixed missing error field in trigger API
+ver 3.0.4
+    - fixed items validation rules for Glaber specific preprocessing types, fixed trends/history settings, added trigger operative data to the event page
+ver 3.0.2
+    - state save/dump refactored, added trigger load/dump support, added trigger memory housekeeping
+ver 3.0.1
+    - triggers state moved to memory, saving triggers to DB is eliminated
+ver 3.0.0
+    - migrated to Zabbix 6.4. sources
+ver 2.18.0
+    - introducing poller connection contention library. It allow to control per-ip (not per-hostid) number of connections and supports control event in cases when host or ip is taken from the key, not from the interface configuration 
+ver 2.17.0
+    - introducing async simple tcp checks. Now glb_agent poller deals with all tcp connections. For now net.tcp.service[http is either supported by glb_agent poller, which will eventually
+    will be renamed to glb_tcp_poller
+ver 2.16.10
+    - fix: endless restart of glbamp if it's failed
+ver 2.16.9
+    - fix: #174 to prevent too frequent intervals on start
+ver 2.16.8
+    - fix: #175 - improper next check calculation where causing poller speed degradation
+ver 2.16.7
+    - added extra logging to figure problems with #175
+ver 2.16.6
+    - fix: #173
+ver 2.16.5
+    - fix: #171 : added proper notify init/flush to avoid segvs on items notify via taskmanager
+ver 2.16.4
+    - fixed maintenance host's items disabling in async code (#169), fixed #170 due to host's changed items notification
+ver 2.16.2
+    - added option to disable v1 polling via async methods
+ver 2.16.1
+    - fix: normal poller items sometimes are acquired by async pollers
+ver 2.16.0
+    - introducing logs colorization by triggering. 
+ver 2.15.4
+    - fixed glb_snmp poller fail on snmpv3
+ver 2.15.3
+    - moved snmp v1 out of async processing
+ver 2.15.2
+    - added default font to RPM web packet 
+ver 2.15.1
+    - added inherited tags fetching in search  
+ver 2.15.0
+    - introducing module context callback links extension to allow modules to make links to own/external resources 
+ver 2.14.21
+    -fix: non filtering options (show details, show without data, group by discovery) are made sticky for a user
+ver 2.14.20
+    -fix: cleaned some logging from UI 
+ver 2.14.19
+    -fix: proper value type display for calculated items, remove experimental from the latest data, grouped view made default
+ver 2.14.18
+    -fix : fail if too many items are requested from the cache at the time, make grouped view default
+ver 2.14.17
+    -fix : fail if too many items are requested from the cache at the time
+ver 2.14.16
+    -fix : template import not working
+ver 2.14.15
+    - fix: ubuntu 16.0 build
+ver 2.14.14
+    - fix: ubuntu 16.0 build, allowed all types for calculated items
+ver 2.14.13
+    - fix: last(#N) wasn't working properly 
+ver 2.14.12
+    - fix: fixed PassiveProxy server filter functionality.
+ver 2.14.11
+    - fix: renamed ValueCacheSize -> CacheSize option in proxy
+ver 2.14.10
+    - fix: improper warning message in proxy about valuecache size, default valuecache size in proxy set to 64M
+ver 2.14.9
+    - fix: fixed #157
+ver 2.14.8
+    - fix: #159 -Search builder theming, fixed Zabbix to Glaber resource files for sass generator
+ver 2.14.7
+    - #160 - glb_syslog_worker is simplified, moved to standard distros, also glb_log_listener removed, as well as glb_hist_clickhouse
+ver 2.14.[4,5,6]
+    - fixes to avoid #157
+ver 2.14.3
+    - #157 - eliminated double-free situation
+ver 2.14.2
+    - #157 - added  logging and protection from zero-updates, fixed sort order in the Discovery grouped
+    lastdata view
+ver 2.14.1
+    - fix: #156 - workers hasn't been restarted properly
+ver 2.14.0
+    - introducing DiscoveryEntity API and new latest data view in UI to show discovered data in table view.
+ver 2.13.9
+    - fixed PIE diagram error due to changed history api
+ver 2.13.8
+    - fixed CHistoryManager typo that gave an error message on some graph widgets
+ver 2.13.7
+    - fixed clickhouse syntax (semicolons where missing in trends ddl)
+ver 2.13.6
+    - added proxy flag check to prevent items set to be polled by proxy to be polled by async pollers
+ver 2.13.5
+    - fix: Gauge32 counters with zero value where converted to float value instead of unsigned integer
+ver 2.13.4
+    - fix: glb_server worker was stucking with noisy workers, overall performance fix, moved event library buffer
+ver 2.13.3
+    - bug fix: #140 - interface isn't required for worker items anymore
+ver 2.13.2
+    - bug fix: #151, tests for reroute steps created and completed, glb_conf a s separate 
+    lib initiated
+ver 2.13.1
+    - logging fix 
+ver 2.13.0
+    - implemented r/w locking for high concurrency objects, several test workers (log, http listener, dummy generator) implemented, structure for
+      mannegerless preprocessing prepared, history compression code cleaned out, worker pipe size increased to ease worker implementation
+ver 2.12.4
+    - fix: changeset broken on 'test now' button in UI
+ver 2.12.3
+    - fix: support for server script items in preprocessing in UI 
+ver 2.12.2
+    - fix: history/trends range check on web forms
+ver 2.12.1
+    - fix of #139 - history was saved even if history saving was disabled for an item
+ver 2.12.0
+   - Items preprocessing dispatching MVP introduced: added feature to reroute items to another items
+   based on JSON contents (possibility to fetch host names and items names from JSON data). 
+ver 2.11.37
+   - fix: improper SNMP IP addr translation
+ver 2.11.36
+    - fix: history time range error message on item/prototype creation in UI
+ver 2.11.35
+    - fix: trends time range error message on item/prototype edit in UI
+ver 2.11.34
+    - trends and history UI and server code cleanup: removed non-working options from the UI, cleaned obsolete housekeeping as well as timescale code from the server
+ver 2.11.33
+    - fixed async pollers events leaking causing high memory leak rates on setups with high item change rates
+ver 2.11.32
+    - fixes: improper type set on items load caused value cache per item reset on first item arrival. Changed items where not updated in the async poller. 
+             Async poller dns wait time changed to 4 seconds
+ver 2.11.30
+    - fixed DNS timeout to 100ms, 64k inflight requests
+ver 2.11.29
+    - added default DNS timeout 1sec, disabled hostname randomization.
+ver 2.11.28
+    - changeset is disabled in API/ui/php as causing sql errors with mysql
+ver 2.11.27
+    - fixed API compatability issues that where causing issues with some versions of Grafana (#89, #65)
+ver 2.11.26
+    - fix in async poller that left conncetions stucked under some conditions
+ver 2.11.25
+    - fixed glb_pinger to renew fd subscription on worker restart, fixed two sources of leak in snmp module
+ver 2.11.24
+    - fixed config cache memory leaking due to imporper hashset iteration use
+ver 2.11.23
+    - fixed problem with functions syncing leading to memory nd config cache leaking
+ver 2.11.22
+    - reverted 2.11.21, returned UPDATE sync instead of full sync
+ver 2.11.21
+    - added timing debug on config cache reload
+ver 2.11.20
+    - fix: snmp positive items are now converted to ui64 instead of float,
+    fixed bug leading to crash on debugging SNMP FAILed item
+ver 2.11.19
+    - fix: too fast ASYNC agent polling might lead to double polls in the same second
+ver 2.11.18
+    - fix: too fast resync problem
+ver 2.11.17
+    - added sync decision logging
+ver 2.11.16
+    - fix: host change changeset SQL problem
+ver 2.11.15
+    - fix: SNMP signed int parsing 
+ver 2.11.14
+    - added limit to 1 LLD item to be stored in the value cache te reduce memory usage
+ver 2.11.13
+    - reverted 2.11.12, introduced minimum snmp get interval to avoid fake huge speeds on Huawei devices
+ver 2.11.12
+    - reduced async polling system hammering on startup
+ver 2.11.10
+    - fix: icmp timeout improper handling that might lead to fake loss data
+ver 2.11.9
+    - fix: csnmp PDU processing of integers with 1-byte data length is fixed
+ver 2.11.8
+    - fix: csnmp bug preventing to parse some PDU snmp data
+ver 2.11.7
+    - fix: itemid-based session id generation
+ver 2.11.6
+    - fix: number of sessions reduced to 16k per poller to eliminate traffic loss
+ver 2.11.5
+    - fix: bug in server worker causing segv on boot
+ver 2.11.4
+    - autosync time increased to avoid config cache lock stagnation on large configs
+ver 2.11.3
+    - minor fixes, removed metrics logging
+ver 2.11.2
+    - fixed sync of global expressions that lead to drop them each second sync
+ver 2.11.1
+    - logging fix
+ver 2.11.0
+    - introducing Glaber APM intrenal monitoring via prometheus - style intrface: internal performance metrics are exposed via http and
+      server can do self-mon via prometheus pollers. Zabbix selfmon metrics are deprecated now and planed to be removed and replaced 
+      during until 3.x release cycle
+var 2.10.5
+    - fixed bug preventing worker restart on some conditions, worker library refactored
+ver 2.10.4
+    - fixes to avoid leaking of configuration: test release of full init sync each frequency period
+var 2.10.3
+    - minor fixes
+ver 2.10.2
+    - fix: memory leak in snmp_walk code
+ver 2.10.1
+    - limit of 65k sessions per async poller inctroduced. fix: database upgrade from old version was broken
+ver 2.10.0
+    - async pollers are switched to libevent, async snmp walk implemented, icmp and snmp pollers are refactored to fully benefit
+        form event library (events + epoll)
+ver 2.9.26
+    - fix race condition in SHM based IPC which might lead to message processing in two workers
+ver 2.9.25
+    - libevent - based async io pollers introduced: polling overhead is quite reduced
+ver 2.9.24
+    - async pollers are switched to libuv (time loop)
+ver 2.9.23
+    - fis of SNMP speed: interpacket delays are minimized
+ver 2.9.22
+    - fix of dbsync sync endless sync loop 
+ver 2.9.21
+    - fix ipc notify stuck problem
+ver 2.9.20
+    - fix changeset table creation problem
+ver 2.9.19
+    - calculated items pollers are switched to own queues to reduce config cache write locks
+    - fixed changset table creation problem
+ver 2.9.18
+    - removed excessive config cache lockings by async processes that reportably caused server to freeze for 5-6 minutes
+      during cache reload time. ipc vectors introduced to pass vectors of uint64 for notifications
+ver 2.9.17
+    - fix snmp poller to allow polling discovery (walk) items, removed test assert in ring buffer 
+ver 2.9.16
+    - event queues brought to main code, pollers refactored to do async wait for data where it's possible
+ver 2.9.15
+    - valuecache memory switched to strict mode (fail on out_of_mem) to produce more prdedictable server error messages
+ver 2.9.14
+    - fixed status widget (removed db upgrade warning), fixed Zabbix-> Glaber naming
+ver 2.9.12 
+    - fixed async timings and proper waiting in snmp 
+ver 2.9.8
+    - fixes: clickhouse item name quotation, fix value type parsing in item's value cache preload
+ver 2.9.5
+    - #removed some logging, #102 fix
+ver 2.9.3
+    - #127 fix
+ver 2.9.2
+    - clickhouse native support is returned and refactored, internal (server) API support for aggregated
+        data for both history and trends introduced, go clickhouse module is considered deprecated now and 
+        will be removed since 3.0
+ver 2.9.1
+    - fixed to correctly work with proxy
+ver 2.9.0
+    - Zabbix sources are upgraded to v 5.4.11
+    - Check now fixed for async pollers
+    - items state refactored to use common elems_hash library
+ver 2.8.12
+    - added logging and exiting when there is not enough State Cache memory
+ver 2.8.11
+    - fixed icmppingsec time to measured in seconds, not in milliseconds
+ver 2.8.10
+    - minor compile warn fixes, UNKNOW constant fix
+ver 2.8.9
+    - logging fix, item view errors fix
+var 2.8.8
+    - added Glaber server not running message to not confise with Zabbix
+    - fixed race condition on heavy configs when async pollers might not get notificaton about 
+    the new items
+    - fixed <defunct> worker processes 
+ver 2.8.7
+    - fixed not supported filter in items view
+ver 2.8.6
+    - fixed template macro not applying due to fast config reload change
+ver 2.8.5
+    - removed some excessive logging
+ver 2.8.4
+    - fix of DCconfig_get_items_by_keys getting segv 
+ver 2.8.3
+    - removed experimental code server worker support (now workers configured in )
+ver 2.8.2
+    - Item API fixed to not return discovery items by default
+    - Added ITEM LLD processing debug
+ver 2.8.0:
+    - databales.net for table views introduced
+ver 2.7.0: 
+    - introduced prototype of faster config cache reload
+    - sever workers are created as a separate type and configured from the ui only, no server restart required any more
+    - glaber pollers now reload items very fast (2 seconds delay) after they are changed in the config
+    - UI notifies server on configruaration change and server does config reload, due to fast reloading it can reload the config quite fast
+var 2.7.1
+    - binary pools introduced for binary data interning
+    - instant configuration reloading via changesets and server notifications introduced
+    - algo: elems hash with per elements locks introduces as a general algo
+    - algo: objects dual many to many list on top of elems hash created
+    - removed rtdata updates for items
+    - pre-parsing snmp oids for minor speed improvements
+    - dns cache issues in pinger module fixes, dns resolve suppression on slow dns introduced
+    - glb_server type of check introduces: simplified worker config, now done only in UI/API without server config, UI server worker type is added
+    - trigger topology indexing functions removed
+    - bugfix: flushing history to trends SQL table removed 

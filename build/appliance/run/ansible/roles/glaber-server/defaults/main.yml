@@ -1,0 +1,6 @@
+---
+zbx_history_module: "clickhouse"
+zbx_history_module_disable_reads: "100"
+zbx_history_module_timeout: "10"
+zbx_server_cache_size: "768M"
+zbx_server_debug_level: "3"

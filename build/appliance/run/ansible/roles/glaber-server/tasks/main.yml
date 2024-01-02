@@ -1,0 +1,228 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - nmap
+      - wget
+      - gnupg2
+      - lsb-release
+      - apt-transport-https
+      - locales
+      - net-tools
+      - iputils-ping
+    state: present
+
+- name: Add glaber GPG key
+  apt_key:
+    url: "https://glaber.io/{{ glaber_repo }}/key/repo.gpg"
+    state: present
+
+- name: Add glaber and nonfree repositories
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  loop:
+    - "deb [arch=amd64] https://glaber.io/{{ glaber_repo }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
+    - "{{ apt_arhive_repo }}" 
+
+- name: Install glaber specific packages
+  apt:
+    name:
+      - "glaber-server-{{ glaber_server_apt_suffix }}={{ glaber_server_version }}"
+      - "glaber-workers={{ glaber_workers_version }}"
+      - fping
+      - snmp-mibs-downloader
+    state: present
+    install_recommends: no
+    update_cache: yes
+
+- name: Create directories and set permissions
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: "{{ item.mode | default(omit) }}"
+  loop:
+    - path: /var/lib/vcdump/
+      owner: zabbix
+      group: zabbix
+    - path: /run/zabbix
+      owner: zabbix
+      group: zabbix
+
+- name: Allow zabbix to run nmap without a password
+  lineinfile:
+    path: /etc/sudoers.d/zabbix
+    state: present
+    create: yes
+    validate: 'visudo -cf %s'
+    line: 'zabbix ALL=(ALL) NOPASSWD: /usr/bin/nmap'
+
+- name: Uncomment locales
+  replace:
+    path: /etc/locale.gen
+    regexp: '^# ({{ item }})'
+    replace: '\1'
+  loop:
+    - 'en_US\.UTF-8'
+    - 'ru_RU\.UTF-8'
+
+- name: Generate locales
+  command: locale-gen
+
+- name: Download mibs
+  command: download-mibs
+
+- name: Check if mysql database exists
+  mysql_query:
+    login_host: localhost
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    query: SHOW DATABASES LIKE '{{ mysql_database }}'
+  register: db_result
+  ignore_errors: yes
+  when: glaber_db_type == 'mysql'
+
+- name: Debug db_result
+  debug:
+    msg: "{{ db_result }}"
+
+- name: Create {{ mysql_database }} database
+  block:
+  - name: Extract the database .gz file
+    shell: "zcat /usr/share/doc/zabbix-server-mysql/create.sql.gz > /tmp/create-mysql.sql"
+    args:
+      creates: "/tmp/create-mysql.sql"
+  - name: Import {{ mysql_database }} mysql database
+    mysql_db:
+      name: "{{ mysql_database }}"
+      state: import
+      target: "/tmp/create-mysql.sql"
+      login_host: localhost
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
+      collation: utf8mb4_bin
+      encoding: utf8mb4
+  - name: Ensure a user has access to the database
+    mysql_user:
+      login_host: localhost
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
+      name: "{{ mysql_user }}"
+      password: "{{ mysql_password }}"
+      priv: '{{ mysql_database }}.*:ALL'
+      state: present
+  when: 
+    - glaber_db_type == 'mysql'
+    - (db_result.failed == true) or (db_result.failed == false and mysql_database not in (db_result.query_result | string))
+
+- name: Check if {{ db_name }} PostgreSQL database exists
+  postgresql_query:
+    query: "SELECT '{{ db_name }}' FROM pg_database WHERE datname = '{{ db_name }}'"
+  register: db_check
+  ignore_errors: yes
+  become_user: "{{ postgres_root_user }}"
+  when: glaber_db_type == 'postgres'
+
+- name: Debug db_check
+  debug:
+    msg: "{{ db_check }}"
+
+- name: Create {{ db_name }} PostgreSQL database
+  block:
+  - name: Extract the database .gz file
+    shell: "zcat /usr/share/doc/zabbix-server-pgsql/create.sql.gz > /tmp/create-postgres.sql"
+    args:
+      creates: "/tmp/create-postgres.sql"
+  - name: Create {{ postgres_user }} PostgreSQL user
+    postgresql_user:
+      name: "{{ postgres_user }}"
+      password: "{{ postgres_password }}"
+      state: present
+    become_user: "{{ postgres_root_user }}"
+  - name: Create {{ postgres_database }} PostgreSQL database
+    postgresql_db:
+      name: "{{ postgres_database }}"
+      owner: "{{ postgres_user }}"
+      state: present
+    become_user: "{{ postgres_root_user }}"
+  - name: Import {{ postgres_database }} PostgreSQL database
+    command:
+      cmd: psql -d {{ postgres_database }} -f /tmp/create-postgres.sql
+    become_user: "{{ postgres_user }}"
+  when: 
+    - glaber_db_type == 'postgres'
+    - (db_check.failed == true) or (db_check.failed == false and postgres_database not in (db_check.query_result | string))
+
+- name: Check if the ClickHouse database exists
+  command: "clickhouse-client --query=\"SHOW DATABASES LIKE '{{ clickhouse_db }}'\""
+  register: db_result_clickhouse
+  ignore_errors: yes
+
+- name: Create {{ clickhouse_db }} ClickHouse database
+  block:
+  - name: Download Clickhouse schema
+    get_url:
+      url: "{{ clickhouse_history_sql }}"
+      dest: "/tmp/create-cickhouse.sql"
+      mode: '0775'
+
+  - name: Set ClickHouse DB name in history.sql
+    replace:
+      path: /tmp/create-cickhouse.sql
+      regexp: 'glaber'
+      replace: "{{ clickhouse_db }}"
+
+  - name: Set ClickHouse retention in history.sql
+    replace:
+      path: /tmp/create-cickhouse.sql
+      regexp: '6 MONTH'
+      replace: "{{ clickhouse_history_retention }}"
+
+  - name: Start the clickhouse-server systemd unit
+    systemd:
+      name: clickhouse-server
+      state: started
+    async: 60
+    poll: 0
+    register: service_result
+
+  - name: Wait for the clickhouse-server to reach the Running state
+    async_status:
+      jid: "{{ service_result.ansible_job_id }}"
+    register: job_result
+    until: job_result.finished
+    retries: 20
+    delay: 3
+
+  - name: Import Clickhouse schema
+    shell: "clickhouse-client --user {{ clickhouse_user }} --password {{ clickhouse_password }} --multiquery < /tmp/create-cickhouse.sql"
+    no_log: true
+
+  - name: Cleanup downloaded files
+    shell: "rm /tmp/create-*.sql"
+  when: clickhouse_db not in db_result_clickhouse.stdout
+
+# to-do add to glaber-server sources
+- name: Increase file descriptor limits for Zabbix Server
+  blockinfile:
+    path: /lib/systemd/system/zabbix-server.service
+    block: |
+      LimitNOFILE=100000
+    insertafter: '^\[Service\]$'
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK for limits"
+
+- name: Reload systemd to apply new settings
+  systemd:
+    daemon_reload: yes
+
+- name: Copy glaber server config
+  template:
+    src: etc/zabbix/zabbix_server.conf.j2
+    dest: /etc/zabbix/zabbix_server.conf
+    owner: "zabbix"
+    group: "root"
+    mode: preserve
+  notify: Start glaber-server

@@ -1,0 +1,124 @@
+---
+- name: Gather facts
+  setup:
+
+- name: Set clickhouse history sql schema url
+  set_fact:
+    clickhouse_history_sql: "https://gitlab.com/mikler/glaber/-/raw/master/database/clickhouse/history.sql"
+
+- name: Search apt cache for PHP package
+  command: apt-cache policy php
+  register: apt_search_result
+  ignore_errors: yes
+
+- name: Set fact for PHP default version from apt cache
+  set_fact:
+    default_php_version: "{{ apt_search_result.stdout | regex_search('Candidate:\\s*(\\S+)', '\\1') | regex_search('(\\d+\\.\\d+)') }}"
+  when: apt_search_result.rc == 0 and 'Candidate:' in apt_search_result.stdout
+
+- name: Set debian variables
+  set_fact:
+    apt_arhive_repo: "deb http://deb.debian.org/debian {{ ansible_distribution_release }} main non-free"
+    apt_glaber_repo: "deb [arch=amd64] https://glaber.io/{{ glaber_repo }}/debian {{ ansible_distribution_release }} main"
+    apt_nginx_repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
+  when: ansible_distribution == 'Debian'
+
+- name: Set ubuntu variables
+  set_fact:
+    apt_arhive_repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} main restricted universe multiverse"
+    apt_glaber_repo: "deb [arch=amd64] https://glaber.io/{{ glaber_repo }}/ubuntu {{ ansible_distribution_release }} main"
+    apt_nginx_repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Set database backend variables
+  set_fact:
+    db_host: "{{ mysql_host }}"
+    db_port: "{{ mysql_port }}"
+    db_name: "{{ mysql_database }}"
+    db_user: "{{ mysql_user }}"
+    db_password: "{{ mysql_password }}"
+    db_service_name: "mysql"
+    db_php_lib: "php{{ default_php_version }}-mysql"
+    glaber_server_apt_suffix: "mysql"
+    glaber_web_db_type: "MYSQL"
+    apt_hold_list: 
+      - "clickhouse-server"
+      - "clickhouse-common-static"
+      - "percona-server-server"
+      - "percona-server-client"
+      - "percona-server-common"
+  when: glaber_db_type == 'mysql'
+
+- name: Set database backend variables
+  set_fact:
+    db_host: "{{ postgres_host }}"
+    db_port: "{{ postgres_port }}"
+    db_name: "{{ postgres_database }}"
+    db_user: "{{ postgres_user }}"
+    db_password: "{{ mysql_password }}"
+    db_service_name: "postgresql"
+    db_php_lib: "php{{ default_php_version }}-pgsql"
+    glaber_server_apt_suffix: "pgsql"
+    glaber_web_db_type: "POSTGRESQL"
+    apt_hold_list: 
+      - "clickhouse-server"
+      - "clickhouse-common-static"
+      - "postgresql-{{ postgresql_version }}"
+      - "postgresql-client-{{ postgresql_version }}"
+  when: glaber_db_type == 'postgres'
+
+- name: Check for nftables
+  command: which nft
+  register: nft_check
+  ignore_errors: yes
+
+- name: Check for iptables
+  command: which iptables
+  register: iptables_check
+  ignore_errors: yes
+
+- name: Configure nftables rules
+  block:
+    - name: Create 'inet' table in nftables
+      ansible.builtin.command: nft create table inet my_table
+      ignore_errors: yes
+    - name: Create 'input' chain in the 'inet' table
+      ansible.builtin.command: >
+        nft create chain inet my_table input { type filter hook input priority 0 \; }
+      ignore_errors: yes
+    - name: Add rule to accept HTTP traffic on port 80
+      ansible.builtin.command: >
+        nft add rule inet my_table input tcp dport 80 accept
+    - name: Add rule to accept zabbix traper traffic on port 10050
+      ansible.builtin.command: >
+        nft add rule inet my_table input tcp dport 10050 accept
+    - name: Add rule to accept zabbix-server traffic on port 10051
+      ansible.builtin.command: >
+        nft add rule inet my_table input tcp dport 10051 accept
+  when: nft_check.rc == 0
+
+- name: Configure iptables rules
+  block:
+    - name: Allow incoming traffic on port 80 for host IP 
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        source: "{{ ansible_facts.all_ipv4_addresses[0] }}"
+        destination_port: "80"
+        jump: ACCEPT
+        comment: "Ansible managed: Allow incoming HTTP traffic for host IP"
+    - name: Allow zabbix traper incoming port 
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "10050"
+        jump: ACCEPT
+        comment: "Ansible managed: Allow zabbix traper incoming port"
+    - name: Allow zabbix-server incoming port 
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "10051"
+        jump: ACCEPT
+        comment: "Ansible managed: Allow zabbix-server incoming port"
+  when: nft_check.rc != 0 and iptables_check.rc == 0

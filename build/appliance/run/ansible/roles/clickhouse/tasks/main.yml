@@ -1,0 +1,61 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - gnupg2
+      - debconf-utils
+      - lsb-release
+    state: present
+    update_cache: yes
+
+- name: Add Clickhouse GPG key
+  apt_key:
+    keyserver: "hkp://keyserver.ubuntu.com:80"
+    id: "{{ clickhouse_pgp_key }}"
+    keyring: "/usr/share/keyrings/clickhouse-keyring.gpg"
+
+- name: Add Clickhouse Repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg]  https://packages.clickhouse.com/deb lts main"
+    state: present
+    filename: 'clickhouse'
+    update_cache: yes
+
+- name: Check if the Clickhouse alredy installed and running
+  command: "clickhouse-client --query='select 1';"
+  register: clickhouse_status
+  ignore_errors: yes
+
+- name: Install Clickhouse
+  block:
+  - name: Set debconf for clickhouse-server default password
+    debconf:
+      name: clickhouse-server
+      question: clickhouse-server/default-password
+      value: "{{ clickhouse_password }}"
+      vtype: password
+
+  - name: Install Clickhouse {{ clickhouse_version }} apt
+    apt:
+      name:
+        - "clickhouse-common-static={{ clickhouse_version }}"
+        - "clickhouse-server={{ clickhouse_version }}"
+      state: present
+  when: "clickhouse_status.rc != 0"
+
+- name: Copy ClickHouse server config
+  copy:
+    src: config.d/
+    dest: /etc/clickhouse-server/config.d/
+    owner: "clickhouse"
+    group: "clickhouse"
+    mode: preserve
+
+- name: Copy ClickHouse server users config
+  template:
+    src: users.xml.j2
+    dest: /etc/clickhouse-server/users.d/users.xml
+    owner: "clickhouse"
+    group: "clickhouse"
+    mode: preserve
+  notify: Restart clickhouse server

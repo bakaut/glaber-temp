@@ -1,0 +1,52 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - gnupg2
+      - python3-psycopg2
+      - libpq-dev
+    state: present
+    update_cache: yes
+
+- name: Add PostgreSQL Repository
+  block:
+  - name: Add PostgreSQL GPG key
+    apt_key:
+      keyserver: "keyserver.ubuntu.com"
+      id: "{{ postgresql_pgp_key_id }}"
+      keyring: "/usr/share/keyrings/postgres.gpg"
+  - name: Add PostgreSQL Repository
+    apt_repository:
+      repo: "deb [signed-by=/usr/share/keyrings/postgres.gpg] https://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+      state: present
+      update_cache: yes
+  # - name: Add arhive PostgreSQL Repository
+  #   apt_repository:
+  #     repo: "deb [trusted=yes] https://apt-archive.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+  #     state: present
+  #     update_cache: yes
+- name: Verify PostgreSQL {{ postgres_root_user }} login
+  postgresql_ping:
+    db: postgres
+    login_user: "{{ postgres_root_user }}"
+    login_password: "{{ postgres_root_password }}"
+  become_user: "{{ postgres_root_user }}"
+  register: pg_ping
+  ignore_errors: yes
+
+- name: Install PostgreSQL
+  block:
+  - name: Install PostgreSQL apt
+    apt:
+      name:
+        - "postgresql-{{ postgresql_version }}"
+        - "postgresql-client-{{ postgresql_version }}"
+      state: present
+  - name: Create a new PostgreSQL user
+    postgresql_user:
+      name: "{{ postgres_root_user }}"
+      password: "{{ postgres_root_password }}"
+      state: present
+    become_user: "{{ postgres_root_user }}"
+    notify: Start postgresql server
+  when: "pg_ping.failed == true or pg_ping.is_available == false" 

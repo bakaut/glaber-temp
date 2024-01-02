@@ -1,0 +1,4 @@
+---
+postgresql_version: "15"
+# https://github.com/docker-library/postgres/blob/f85674ce472bc78b8b8a0478dacd595e44cb9616/15/bullseye/Dockerfile#L76C7-L76C47
+postgresql_pgp_key_id: "B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8"

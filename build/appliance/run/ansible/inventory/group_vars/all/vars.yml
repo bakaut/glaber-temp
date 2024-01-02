@@ -1,0 +1,44 @@
+---
+environment:
+  DEBIAN_FRONTEND: "noninteractive"
+
+glaber_repo: "repo"
+glaber_build_version: "3.2.34"
+glaber_db_type: "mysql" # (mysql or postgres)
+glaber_web_user: "Admin"
+glaber_web_password: "zabbix"
+glaber_web_port: "80"
+
+# glaber apt packages versions
+glaber_server_version: "1:3.2.34*"
+glaber_nginx_version: "1:3.2.34*"
+glaber_workers_version: "1:1.0.10*"
+nginx_version: "1.20*"
+
+hurl_version: "4.1.0"
+
+clickhouse_server: "127.0.0.1"
+clickhouse_port: "8123"
+clickhouse_db: "glaber"
+clickhouse_user: "defaultuser"
+clickhouse_password: "password"
+clickhouse_max_memory_usage_bytes: "3000000000" # ~3Gb
+clickhouse_history_retention: "30 DAY"
+
+
+mysql_host: "localhost"
+mysql_port: "3306"
+mysql_user: "zabbix"
+mysql_password: "zabbix"
+mysql_root_password: "P@s$W0rd"
+mysql_database: "glaber"
+mysql_config_innodb_buffer_pool_size: "2G"
+
+postgres_host: "localhost"
+postgres_port: "5432"
+postgres_root_user: "postgres"
+postgres_root_password: "pa$$w0rD"
+postgres_user: "zabbix"
+postgres_password: "zabbix"
+postgres_database: "glaber"
+postgres_schema: "public"

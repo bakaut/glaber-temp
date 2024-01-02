@@ -1,0 +1,14 @@
+---
+- hosts: glaber
+  become: true
+  remote_user: root
+  roles:
+  - role: prepare
+  - role: clickhouse
+  - role: mysql
+    when: glaber_db_type == 'mysql'
+  - role: postgresql
+    when: glaber_db_type == 'postgres'
+  - role: glaber-server
+  - role: glaber-web
+  - role: postinstall

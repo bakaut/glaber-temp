@@ -1,0 +1,9 @@
+---
+# php
+php_tz: "Europe/Moscow"
+php_memory_limit: "512M"
+php_upload_max_filesize: "20M"
+# glaber-web
+zbx_server_host: "localhost"
+zbx_server_port: "10051"
+zbx_server_name: "glaber"

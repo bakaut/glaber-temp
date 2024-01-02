@@ -1,0 +1,63 @@
+---
+- name: Restart services
+  block:    
+  - name: Restart {{ db_service_name }} server
+    systemd:
+      name: "{{ db_service_name }}"
+      state: restarted
+  - name: Restart clickhouse-server
+    systemd:
+      name: clickhouse-server
+      state: restarted
+  - name: Restart glaber-server
+    systemd:
+      name: zabbix-server
+      state: restarted
+  - name: Restart {{ default_php_version }}-fpm
+    systemd:
+      name: php{{ default_php_version }}-fpm
+      state: restarted  
+  - name: Restart nginx
+    systemd:
+      name: nginx
+      state: restarted
+
+- name: Download Hurl package
+  get_url:
+    url: "https://github.com/Orange-OpenSource/hurl/releases/download/{{ hurl_version }}/hurl_{{ hurl_version }}_amd64.deb"
+    dest: "/tmp/hurl_{{ hurl_version }}_amd64.deb"
+
+- name: Install Hurl
+  apt:
+    deb: "/tmp/hurl_{{ hurl_version }}_amd64.deb"
+
+- name: Copy hurl template
+  template:
+    src: glaber-runing.hurl.j2
+    dest: /tmp/glaber-runing.hurl
+
+- name: Wait for zabbix web port to be reachable
+  wait_for:
+    host: "{{ ansible_facts.all_ipv4_addresses[0] }}"
+    port: "{{ glaber_web_port }}"
+    state: started  # 'started' means the port is open, 'stopped' means it's closed
+    timeout: 30  # How long to wait before giving up
+
+- name: Run check zabbix running
+  command: hurl --retry 2 --retry-interval 10000 /tmp/glaber-runing.hurl
+
+- name: Installation complited
+  debug:
+    msg: |
+      Zabbix up and running
+
+      http://{{ ansible_facts.all_ipv4_addresses[0] }}:{{ glaber_web_port }}
+
+      Login: {{ glaber_web_user }}
+      Password: {{ glaber_web_password }}
+
+- name: Hold database package version
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ apt_hold_list }}"

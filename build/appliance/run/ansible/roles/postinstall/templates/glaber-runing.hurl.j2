@@ -1,0 +1,21 @@
+# Login to glaber web
+POST http://{{ ansible_facts.all_ipv4_addresses[0] }}:{{ glaber_web_port }}/index.php
+User-Agent: Mozilla/5.0 
+Content-Type: application/x-www-form-urlencoded
+[FormParams]
+name: {{ glaber_web_user }}
+password: {{ glaber_web_password }}
+enter: Sign+in
+HTTP/1.1 302
+
+# Check glaber-server is runing
+POST http://{{ ansible_facts.all_ipv4_addresses[0] }}:{{ glaber_web_port }}/jsrpc.php?output=json-rpc
+User-Agent: Mozilla/5.0 
+Content-Type: application/json-rpc
+Accept: */*
+```
+{"jsonrpc":"2.0","method":"zabbix.status","params":{"nocache":true},"id":3}
+```
+HTTP/1.1 200
+[Asserts]
+jsonpath "$.result.result" == true
