@@ -16,8 +16,7 @@ jobs:
       - name: Build glaber
         run: |
           cd /opt/glaber
-          ls
-          pwd
+          set -x
           export GLABER_VERSION=$(cat include/version.h | grep GLABER_VERSION | tr -dc 0-9.)
           ./bootstrap.sh
           ./configure

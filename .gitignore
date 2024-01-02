@@ -231,7 +231,6 @@ create.sql
 create.sql.done
 build/appliance/run/docker/glaber-server/etc/zabbix
 src/glapi/glb_netflow_collector
-configure.ac
 src/libs/zbxdbschema/dbschema.c
 .sass-cache/*
 src/glapi/glb_syslog_sender
