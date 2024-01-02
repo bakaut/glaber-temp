@@ -9,6 +9,8 @@ jobs:
     container:
       image: ghcr.io/bakaut/builder/builder:glaber-debian-bullseye-0.0.1-23
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
       - name: Build glaber
         run: |
           export GLABER_VERSION=$(cat include/version.h | grep GLABER_VERSION | tr -dc 0-9.)
