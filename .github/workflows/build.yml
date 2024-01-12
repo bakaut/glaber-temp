@@ -6,23 +6,23 @@ on:
 jobs:
   build-glaber:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/bakaut/builder/builder:glaber-debian-bullseye-0.0.1-23
-      volumes:
-        - ${{ github.workspace }}:/opt/glaber
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
       - name: Build glaber
         run: |
+          apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          apt-get update
+          apt-get install -y packer
           cd /opt/glaber
           set -x
-          export GLABER_VERSION=$(cat include/version.h | grep GLABER_VERSION | tr -dc 0-9.)
-          ./bootstrap.sh
-          ./configure
-          make dbschema gettext
-          autoreconf -fvi
-          cp -r build/${OS}/${OS_VER}/ debian
-          sed -i "1 s/(.*+/(1:$GLABER_VERSION-${CI_COMMIT_SHORT_SHA}+/g" debian/changelog
-          head -n 5 debian/changelog
-          dpkg-buildpackage -b --no-sign
+          export GLABER_VERSION="3.4.1"
+          export CI_REGISTRY_USER="${{ github.actor }}"
+          export REPO_DIR="repo"
+          export CI_REGISTRY="ghcr.io"
+          export CI_REGISTRY_IMAGE="ghcr.io/${{ github.repository }}"
+          cd build/appliance/build/docker
+          packer init .
+          packer validate .
+          export DOCKER_PASSWORD=${{ secrets.GITHUB_TOKEN }}
+          packer build -color=false -timestamp-ui -warn-on-undeclared-var .
