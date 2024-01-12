@@ -11,11 +11,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Build glaber
         run: |
-          apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          apt-get update
-          apt-get install -y packer
-          cd /opt/glaber
-          set -x
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update
+          sudo apt-get install -y packer
           export GLABER_VERSION="3.4.1"
           export CI_REGISTRY_USER="${{ github.actor }}"
           export REPO_DIR="repo"
