@@ -7,7 +7,7 @@ build {
     inline = [
       "apt-get update",
       "apt-get install -y nmap wget gnupg2 lsb-release apt-transport-https locales net-tools iputils-ping",
-      "wget -qO - https://glaber.io/${var.glaber_repo}/key/repo.gpg | apt-key add -",
+      "wget -qO - https://glaber.io/${var.glaber_repo}/key/repo.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/glaber_repo.gpg",
       "echo \"deb [arch=amd64] https://glaber.io/${var.glaber_repo}/debian $(lsb_release -sc) main\" >> /etc/apt/sources.list.d/glaber.list",
       "echo 'deb http://ftp.de.debian.org/debian bullseye main non-free' > /etc/apt/sources.list.d/nonfree.list",
       "apt-get update",
@@ -22,6 +22,7 @@ build {
       "sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen",
       "sed -i '/ru_RU.UTF-8/s/^# //g' /etc/locale.gen",
       "locale-gen",
+      "smistrip",
       "download-mibs",
       "rm /etc/zabbix/zabbix_server.conf"
     ]
@@ -59,8 +60,8 @@ build {
       "apt-get install -y wget software-properties-common nmap gnupg2 openssl",
       "apt-get install -y ca-certificates supervisor default-mysql-client locales",
       "apt-get install -y lsb-release apt-transport-https dbus",
-      "wget -qO - https://glaber.io/${var.glaber_repo}/key/repo.gpg | apt-key add -",
-      "wget -qO - https://nginx.org/keys/nginx_signing.key | apt-key add -",
+      "wget -qO - https://glaber.io/${var.glaber_repo}/key/repo.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/glaber_repo.gpg",
+      "wget -qO - https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/nginx_signing.gpg",
       "echo \"deb [arch=amd64] https://glaber.io/${var.glaber_repo}/debian $(lsb_release -sc) main\" >> /etc/apt/sources.list.d/glaber.list",
       "apt-get update",
       "apt-get install -y glaber-nginx-conf=1:${var.glaber_build_version}*",
