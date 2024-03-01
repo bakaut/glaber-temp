@@ -27,4 +27,4 @@ jobs:
           packer init .
           packer validate .
           export DOCKER_PASSWORD=${{ secrets.GITHUB_TOKEN }}
-          packer build -color=false -timestamp-ui -warn-on-undeclared-var .
+          packer build -color=false -timestamp-ui -warn-on-undeclared-var -parallel-builds=1 .
