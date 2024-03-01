@@ -18,7 +18,7 @@ jobs:
           version: "1.8.5"
       - name: Build glaber
         run: |
-          export GLABER_VERSION="3.4.74"
+          export GLABER_VERSION="3.4.29"
           export CI_REGISTRY_USER="${{ github.actor }}"
           export REPO_DIR="repo"
           export CI_REGISTRY="ghcr.io"
